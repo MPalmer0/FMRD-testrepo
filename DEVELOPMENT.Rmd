@@ -1,0 +1,112 @@
+---
+output: github_document
+---
+
+<!--The DEVELOPMENT.md file is created using DEVELOPMENT.Rmd. Please edit and knit the RMarkdown file-->
+
+# Development
+
+This page is intended to provide overall coding guidelines.
+Please see the [README](README.md).
+
+## Getting Started
+
+* Make sure you have a [GitHub account](https://github.com/signup/free) and have been added to the project repository. You will have to accept the invitation within seven days.
+* NOAA requires two-factor authentication for GitHub to increase security. You should recieve instructions when you accept the invitation. "Authy" is a good phone app for this purpose but there are many from which to choose.
+* If you're not familiar with git or GitHub, <http://happygitwithr.com/> is one of the best places to get started.
+
+
+## Style
+
+* **R:** Follow the Tidyverse Style Guide [style guide](https://style.tidyverse.org/)
+* **SQL:** TBD
+
+## Basic Daily Workflow
+
+1. Pull (fetch and merge in one step) new changes from GitHub to your local
+2. Create branch if making substantial changes
+3. Make changes
+4. Add inidividual small changes to be staged to commit
+5. Commit changes
+6. Add (stage) additional small changes
+7. Commit changes
+8. Push changes to remote (GitHub) - do this frequently so others are starting with your changes when the pull. Always do when done working on a project for the day.
+
+## Production Workflow
+
+Main (currently `master`) branch is the "release" production version and **never** gets modified directly.
+
+`develop` is the primary branch to work in and from where branches should originate. This branch gets merged into the `master` branch for new releases (add release numbering info.)
+
+```{r echo=FALSE, out.width='300px'}
+knitr::include_graphics("Figures/git-main-branches@2x.png")
+```
+
+`features` are branches from `develop` for supporting projects and modules and large test areas. Each `feature` branch should have a descriptive name. To add additional details, there should be a GitHub issue associated with each `feature` branch. Ideally the issue title would be the same as the `feature` name. This connects the reasoning behind the feature, changes, or module and documents any discussion and decision making. If the branch incorporates multiple issues, the issues should either be merged or the main issue associated with the `feature` or should include links to the other issues. After initial testing, this branch should be merged back into the `develop` branch. 
+
+There is also the potential to have `hotfixes`. These would be temporary branches from the main branch that are for very small but critical fixes. The process would be to `branch` from the `master` make the fix, test it, then `merge` into **both** the `master` and the `develop` branches. I'm not sure if this will be needed but it's an option.
+
+## Issues
+
+Make use of GitHub [issues](https://github.com/MPalmer0/FMRD-testrepo/issues) when adding or modifying any code. Use issues to plan changes, workflows, improvements, additions, and ask questions. The associated KanBan boards should be used to help keep issues with code development organized. 
+
+## Making changes
+
+* Create an issue for each Git branch or change more in depth than a minor fix.
+* Edit the files, save often, and make commits of logical units, where each commit indicates one concept
+* Commits are the level you can most readily revert to if there's a problem, therefore many small changes is much better than large changes.
+
+## Commit Messages
+
+Follow standard git commit message advice. In brief:
+
+The first line is the subject, and should summarise the changes in the commit in under 50 characters.
+
+If additional details are required, add a blank line, and then provide explanation and context in paragraph format.
+
+If the commit fixes a GitHub issue include Fixes #<issue-number>. This will ensure that the issue is automatically closed when the commit is merged into master.
+
+## Branching
+
+An example workflow when wanting to create a new feature, module, or improvement would start by creating a new github issue or working with an existing issue in the `to do` panel of the kanban project board. Then create a new branch from the `develop` branch.
+
+```
+git pull origin develop
+git checkout -b feature_8a24c1 develop
+```
+
+Now work on the feature and once you are happy with it and it's been tested a bit you can bring it back into the `develop` branch. 
+
+```
+git checkout develop
+git merge --no-ff feature_8a24c1
+git branch -d feature_8a24c1
+git push origin develop
+```
+
+```{r echo=FALSE, out.width='125px'}
+knitr::include_graphics("Figures/fb@2x.png")
+```
+
+This is great because the new feature has been incorporated into the development branch but still has not affected the production (`master`) branch. When the `develop` branch has been sufficiently tested and the group is ready for a new production release, the development version can be merged into the master branch.
+
+```
+git pull origin develop
+git pull origin master
+git checkout master
+git merge --no-ff develop
+git tag -a 0.9
+```
+
+Branches do not ever have to be merged back into the development branch or anywhere else. They can be left hanging indefinitely or deleted if you are sure you don't want any of the code that was written.
+
+A great, detailed guide on git branching for software production is at <https://nvie.com/posts/a-successful-git-branching-model/>. It is where these images came from.
+
+Much, if not all, of this process can be done in RStudio now although it's good to know the command line basics since more advanced troubleshooting will require using git via the command line. I am not sure if the merging in RStudio can be done with the `--no-ff` option.
+
+## Testing
+
+## Notes
+
+For bash scripts, the shell requires lines to end with Line-Feed (LF) characters. This should be the default in Linux and Mac OS editors, but in Windows there are often problems. Windows uses Carriage-Return-Line-Feed (CR-LF) line terminations. Change the settings in your text editor or IDE to ensure it converts to LF so the code can be run on the Linux server.
+© 2021 GitHub, Inc.
